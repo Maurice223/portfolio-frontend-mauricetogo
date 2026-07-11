@@ -1,0 +1,206 @@
+<section id="skills" class="py-24 bg-gray-950 text-white">
+
+  <div class="max-w-7xl mx-auto px-6">
+
+
+    <!-- TITRE -->
+
+    <div class="text-center mb-16" data-aos="fade-up">
+
+      <p class="text-blue-400 uppercase tracking-widest mb-3">
+        Mes expertises
+      </p>
+
+      <h2 class="text-4xl md:text-5xl font-black">
+        Compétences techniques
+      </h2>
+
+      <p class="text-gray-400 mt-5 max-w-2xl mx-auto">
+        Les technologies et outils que j'utilise pour créer
+        des applications web et mobiles modernes.
+      </p>
+
+    </div>
+
+
+
+    <!-- LISTE -->
+
+    @if(competences.length > 0){
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+
+      @for(comp of competences; track comp.id; let i = $index){
+
+
+      <div
+      data-aos="fade-up"
+      [attr.data-aos-delay]="i * 100"
+      class="
+      bg-gray-900
+      border border-gray-800
+      rounded-2xl
+      p-7
+      shadow-xl
+      hover:-translate-y-3
+      hover:border-blue-500
+      transition
+      duration-500
+      ">
+
+
+        <!-- HEADER -->
+
+        <div class="flex items-center justify-between mb-6">
+
+
+          <div class="flex items-center gap-4">
+
+
+            <div
+            class="
+            w-12
+            h-12
+            rounded-xl
+            bg-blue-600/20
+            flex
+            items-center
+            justify-center
+            text-2xl
+            ">
+
+
+              @if(comp.categorie === 'Frontend'){
+                💻
+              }
+              @else if(comp.categorie === 'Backend'){
+                ⚙️
+              }
+              @else if(comp.categorie === 'Mobile'){
+                📱
+              }
+              @else {
+                🚀
+              }
+
+
+            </div>
+
+
+
+            <div>
+
+              <h3 class="text-xl font-bold">
+
+                {{comp.nom}}
+
+              </h3>
+
+
+              <p class="text-sm text-gray-400">
+
+                {{comp.categorie}}
+
+              </p>
+
+
+            </div>
+
+
+          </div>
+
+
+
+
+          <span
+          class="
+          text-blue-400
+          font-bold
+          text-lg
+          ">
+
+            {{comp.niveau}}%
+
+          </span>
+
+
+        </div>
+
+
+
+
+        <!-- PROGRESSION -->
+
+
+        <div
+        class="
+        w-full
+        h-3
+        bg-gray-700
+        rounded-full
+        overflow-hidden
+        ">
+
+
+          <div
+
+          class="
+          h-full
+          bg-gradient-to-r
+          from-blue-500
+          to-cyan-400
+          rounded-full
+          transition-all
+          duration-1000
+          "
+
+          [style.width.%]="comp.niveau">
+
+          </div>
+
+
+        </div>
+
+
+
+
+        <!-- DESCRIPTION -->
+
+        <p class="text-gray-400 mt-5 text-sm leading-6">
+
+          Maîtrise de {{comp.nom}} pour le développement
+          d'applications performantes.
+
+        </p>
+
+
+
+      </div>
+
+
+      }
+
+
+    </div>
+
+
+    }
+
+    @else {
+
+
+      <div class="text-center text-gray-400">
+
+        Aucune compétence disponible.
+
+      </div>
+
+
+    }
+
+
+  </div>
+
+
+</section>

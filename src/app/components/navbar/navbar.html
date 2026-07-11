@@ -1,0 +1,97 @@
+<section id="navbar">
+  <nav
+    class="fixed top-0 left-0 w-full z-50 bg-gray-950/70 backdrop-blur-xl border-b border-gray-800"
+  >
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+      <!-- LOGO -->
+
+      <a
+        href="#hero"
+        class="text-3xl font-black tracking-wide text-blue-500 hover:scale-105 transition"
+      >
+        Maurice<span class="text-white">.Dev</span>
+      </a>
+
+      <!-- MENU DESKTOP -->
+
+      <ul class="hidden lg:flex items-center gap-8 text-gray-300 font-medium">
+        <li>
+          <a href="#about" class="nav-link" [class.active]="sectionActive === 'about'">
+            À propos
+          </a>
+        </li>
+
+        <li>
+          <a href="#skills" class="nav-link" [class.active]="sectionActive === 'about'"> Compétences </a>
+        </li>
+
+        <li>
+          <a href="#projects" class="nav-link" [class.active]="sectionActive === 'about'"> Projets </a>
+        </li>
+
+        <li>
+          <a href="#experience" class="nav-link" [class.active]="sectionActive === 'about'"> Expériences </a>
+        </li>
+
+        <li>
+          <a href="#education" class="nav-link" [class.active]="sectionActive === 'about'"> Formation </a>
+        </li>
+
+        <li>
+          <a href="#contact" class="nav-link" [class.active]="sectionActive === 'about'"> Contact </a>
+        </li>
+      </ul>
+
+      <!-- BOUTON CONTACT -->
+
+      <a
+        href="#contact"
+        class="hidden lg:block bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold shadow-lg shadow-blue-600/30 transition hover:scale-105"
+      >
+        Me contacter
+      </a>
+
+      <!-- MOBILE BUTTON -->
+
+      <button (click)="toggleMenu()" class="lg:hidden text-white text-3xl focus:outline-none">
+        @if (menuOuvert) {
+          <span> ✕ </span>
+        } @else {
+          <span> ☰ </span>
+        }
+      </button>
+    </div>
+
+    <!-- MOBILE MENU -->
+
+    @if (menuOuvert) {
+      <div class="lg:hidden bg-gray-950 border-t border-gray-800 animate-fade">
+        <ul class="flex flex-col items-center gap-6 py-8 text-gray-300">
+          <li>
+            <a (click)="toggleMenu()" href="#about" class="nav-link" [class.active]="sectionActive === 'about'"> À propos </a>
+          </li>
+
+          <li>
+            <a (click)="toggleMenu()" href="#skills" class="nav-link" [class.active]="sectionActive === 'about'"> Compétences </a>
+          </li>
+
+          <li>
+            <a (click)="toggleMenu()" href="#projects" class="nav-link" [class.active]="sectionActive === 'about'"> Projets </a>
+          </li>
+
+          <li>
+            <a (click)="toggleMenu()" href="#experience" class="nav-link" [class.active]="sectionActive === 'about'"> Expériences </a>
+          </li>
+
+          <li>
+            <a (click)="toggleMenu()" href="#education" class="nav-link" [class.active]="sectionActive === 'about'"> Formation </a>
+          </li>
+
+          <li>
+            <a (click)="toggleMenu()" href="#contact" class="nav-link" [class.active]="sectionActive === 'about'"> Contact </a>
+          </li>
+        </ul>
+      </div>
+    }
+  </nav>
+</section>

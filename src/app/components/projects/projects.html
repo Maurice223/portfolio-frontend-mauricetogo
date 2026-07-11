@@ -1,0 +1,265 @@
+<section id="projects" class="py-24 bg-gray-950 text-white">
+
+  <div class="max-w-7xl mx-auto px-6">
+
+
+    <!-- TITRE -->
+
+    <div class="text-center mb-16">
+
+      <h2 class="text-4xl md:text-5xl font-black">
+        Mes <span class="text-blue-500">projets</span>
+      </h2>
+
+      <p class="text-gray-400 mt-5 text-lg">
+        Découvrez mes réalisations et les technologies utilisées.
+      </p>
+
+    </div>
+
+
+
+    <!-- PROJETS -->
+
+    @if(projets.length > 0){
+
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+
+
+        @for(projet of projets; track projet.id){
+
+
+          <div
+          class="
+          group
+          bg-gray-900
+          rounded-2xl
+          overflow-hidden
+          shadow-xl
+          border
+          border-gray-800
+          hover:border-blue-500
+          hover:-translate-y-3
+          transition-all
+          duration-500
+          "
+          >
+
+
+
+            <!-- IMAGE -->
+
+            <div class="relative h-56 overflow-hidden">
+
+
+              <img
+
+              [src]="'http://localhost:8080' + projet.image"
+
+              [alt]="projet.titre"
+
+              class="
+              w-full
+              h-full
+              object-cover
+              group-hover:scale-110
+              transition
+              duration-700
+              "
+
+              >
+
+
+              <div
+              class="
+              absolute
+              inset-0
+              bg-gradient-to-t
+              from-gray-950
+              via-transparent
+              opacity-60
+              ">
+              </div>
+
+
+            </div>
+
+
+
+
+
+            <!-- CONTENU -->
+
+
+            <div class="p-6">
+
+
+
+              <h3
+              class="
+              text-2xl
+              font-bold
+              mb-3
+              group-hover:text-blue-400
+              transition
+              "
+              >
+
+              {{ projet.titre }}
+
+              </h3>
+
+
+
+
+              <p class="text-gray-400 leading-7">
+
+                {{ projet.description }}
+
+              </p>
+
+
+
+
+
+              <!-- TECHNOLOGIES -->
+
+
+              <div class="flex flex-wrap gap-2 mt-5">
+
+
+                @for(tech of projet.technologies.split(','); track tech){
+
+
+                  <span
+
+                  class="
+                  px-3
+                  py-1
+                  rounded-full
+                  text-sm
+                  bg-blue-600/20
+                  text-blue-400
+                  border
+                  border-blue-500/20
+                  "
+
+                  >
+
+                  {{tech}}
+
+                  </span>
+
+
+                }
+
+
+              </div>
+
+
+
+
+
+              <!-- BOUTONS -->
+
+
+              <div class="flex gap-4 mt-7">
+
+
+                @if(projet.lienGithub){
+
+                <a
+
+                [href]="projet.lienGithub"
+
+                target="_blank"
+
+                class="
+                px-5
+                py-2
+                rounded-lg
+                bg-white
+                text-black
+                font-semibold
+                hover:bg-gray-200
+                transition
+                "
+
+                >
+
+                Github
+
+                </a>
+
+                }
+
+
+
+
+
+                @if(projet.lienDemo){
+
+                <a
+
+                [href]="projet.lienDemo"
+
+                target="_blank"
+
+                class="
+                px-5
+                py-2
+                rounded-lg
+                bg-blue-600
+                hover:bg-blue-700
+                font-semibold
+                transition
+                "
+
+                >
+
+                Demo
+
+                </a>
+
+                }
+
+
+              </div>
+
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+        }
+
+
+      </div>
+
+
+    }
+
+    @else {
+
+
+      <p class="text-center text-gray-500 text-xl">
+
+        Aucun projet disponible.
+
+      </p>
+
+
+    }
+
+
+
+  </div>
+
+
+</section>
