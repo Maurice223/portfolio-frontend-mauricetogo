@@ -1,0 +1,216 @@
+<section id="education" class="py-24 bg-gray-950 text-white">
+
+
+  <div class="max-w-6xl mx-auto px-6">
+
+
+    <!-- TITRE -->
+
+    <div class="text-center mb-16">
+
+
+      <h2 class="text-4xl md:text-5xl font-black">
+
+        Formation
+        <span class="text-blue-500">
+          & Éducation
+        </span>
+
+      </h2>
+
+
+      <p class="text-gray-400 mt-5 text-lg">
+
+        Mon parcours académique et mes apprentissages.
+
+      </p>
+
+
+    </div>
+
+
+
+
+    <!-- FORMATIONS -->
+
+
+    @if(formations.length > 0){
+
+
+    <div data-aos="zoom-in" class="grid md:grid-cols-2 gap-10">
+
+
+
+      @for(formation of formations; track formation.id){
+
+
+
+      <div class="
+          group
+          bg-gray-900/80
+          backdrop-blur
+          border
+          border-gray-800
+          rounded-3xl
+          p-8
+          shadow-xl
+          hover:border-blue-500
+          hover:-translate-y-3
+          transition-all
+          duration-500
+          ">
+
+
+
+
+        <!-- HEADER -->
+
+
+        <div class="flex items-center gap-5 mb-6">
+
+
+
+          <div class="
+              w-16
+              h-16
+              rounded-2xl
+              bg-gradient-to-br
+              from-blue-500
+              to-purple-600
+              flex
+              items-center
+              justify-center
+              text-3xl
+              shadow-lg
+              group-hover:scale-110
+              transition
+              ">
+
+            🎓
+
+
+          </div>
+
+
+
+
+          <div>
+
+
+            <h3 class="
+                text-2xl
+                font-bold
+                group-hover:text-blue-400
+                transition
+                ">
+
+              {{formation.titre}}
+
+            </h3>
+
+
+
+            <p class="text-blue-400 mt-1 font-semibold">
+
+              {{formation.ecole}}
+
+            </p>
+
+
+
+          </div>
+
+
+
+        </div>
+
+
+
+
+
+
+        <!-- DESCRIPTION -->
+
+
+        <p class="
+            text-gray-400
+            leading-7
+            ">
+
+          {{formation.description}}
+
+        </p>
+
+
+
+
+
+
+        <!-- DATE -->
+
+
+        <div class="
+            mt-7
+            inline-flex
+            items-center
+            gap-2
+            px-4
+            py-2
+            rounded-full
+            bg-blue-600/20
+            text-blue-400
+            text-sm
+            border
+            border-blue-500/20
+            ">
+
+          📅
+
+          {{formation.dateDebut}}
+
+          <span>
+            →
+          </span>
+
+          {{formation.dateFin}}
+
+
+        </div>
+
+
+
+
+
+      </div>
+
+
+
+      }
+
+
+
+    </div>
+
+
+
+    }
+
+    @else {
+
+
+    <p class="text-center text-gray-500 text-xl">
+
+      Aucune formation disponible.
+
+    </p>
+
+
+    }
+
+
+
+  </div>
+
+
+
+</section>

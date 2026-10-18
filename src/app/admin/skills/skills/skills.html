@@ -1,0 +1,356 @@
+
+<section class="skills-page">
+  <header class="page-header">
+    <div class="header-copy">
+      <span class="eyebrow">ESPACE ADMINISTRATEUR</span>
+      <h1>Gestion des compétences</h1>
+      <p>Organise tes expertises techniques et maîtrise leur présentation sur ton portfolio.</p>
+    </div>
+
+    <button class="primary-btn" type="button" (click)="ouvrirCreation()">
+      <span class="plus-icon">＋</span>
+      Ajouter une compétence
+    </button>
+  </header>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-icon blue">⌘</div>
+      <div class="stat-content">
+        <span class="stat-label">Compétences</span>
+        <strong>{{ totalCompetences }}</strong>
+        <small>Enregistrées au total</small>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon violet">◈</div>
+      <div class="stat-content">
+        <span class="stat-label">Catégories</span>
+        <strong>{{ categories.length }}</strong>
+        <small>Domaines techniques</small>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon green">↗</div>
+      <div class="stat-content">
+        <span class="stat-label">Niveau moyen</span>
+        <strong>{{ moyenneNiveau }}<span class="percent">%</span></strong>
+        <small>Sur l'ensemble des compétences</small>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon amber">★</div>
+      <div class="stat-content">
+        <span class="stat-label">Niveau avancé</span>
+        <strong>{{ competencesAvancees }}</strong>
+        <small>Maîtrise de 80 % ou plus</small>
+      </div>
+    </article>
+  </div>
+
+  <div class="notice success-notice" *ngIf="succes">
+    <span>✓</span>
+    <p>{{ succes }}</p>
+    <button type="button" aria-label="Fermer" (click)="succes = ''">×</button>
+  </div>
+
+  <div class="notice error-notice" *ngIf="erreur">
+    <span>!</span>
+    <p>{{ erreur }}</p>
+    <button type="button" aria-label="Fermer" (click)="erreur = ''">×</button>
+  </div>
+
+  <section class="management-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Mes compétences</h2>
+        <p>Recherche, modification et organisation de tes compétences.</p>
+      </div>
+
+      <span class="result-count">
+        {{ competencesFiltrees.length }}
+        résultat{{ competencesFiltrees.length > 1 ? 's' : '' }}
+      </span>
+    </div>
+
+    <div class="filters">
+      <label class="search-box">
+        <span class="search-icon">⌕</span>
+        <input
+          type="search"
+          [(ngModel)]="recherche"
+          placeholder="Rechercher un nom ou une catégorie..."
+          aria-label="Rechercher une compétence"
+        />
+        <button
+          *ngIf="recherche"
+          type="button"
+          class="clear-search"
+          (click)="recherche = ''"
+          aria-label="Effacer la recherche"
+        >×</button>
+      </label>
+
+      <select
+        [(ngModel)]="categorieSelectionnee"
+        aria-label="Filtrer par catégorie"
+      >
+        <option value="Toutes">Toutes les catégories</option>
+        <option *ngFor="let categorie of categories" [value]="categorie">
+          {{ categorie }}
+        </option>
+      </select>
+
+      <button
+        type="button"
+        class="reset-btn"
+        (click)="reinitialiserFiltres()"
+      >
+        Réinitialiser
+      </button>
+    </div>
+
+    <div class="loading-state" *ngIf="chargement">
+      <span class="spinner"></span>
+      <p>Chargement des compétences...</p>
+    </div>
+
+    <div
+      class="empty-state"
+      *ngIf="!chargement && competencesFiltrees.length === 0"
+    >
+      <div class="empty-icon">◇</div>
+      <h3>
+        {{ competences.length === 0
+          ? 'Aucune compétence enregistrée'
+          : 'Aucun résultat trouvé' }}
+      </h3>
+      <p>
+        {{ competences.length === 0
+          ? 'Commence par ajouter tes compétences techniques.'
+          : 'Essaie une autre recherche ou modifie le filtre sélectionné.' }}
+      </p>
+      <button
+        *ngIf="competences.length === 0"
+        type="button"
+        class="primary-btn"
+        (click)="ouvrirCreation()"
+      >
+        Ajouter ma première compétence
+      </button>
+      <button
+        *ngIf="competences.length > 0"
+        type="button"
+        class="secondary-btn"
+        (click)="reinitialiserFiltres()"
+      >
+        Effacer les filtres
+      </button>
+    </div>
+
+    <div class="skills-grid" *ngIf="!chargement && competencesFiltrees.length > 0">
+      <article
+        class="skill-card"
+        *ngFor="let competence of competencesFiltrees; trackBy: trackById"
+      >
+        <div class="skill-card-top">
+          <div class="skill-avatar">
+            {{ (competence.nom || '?').charAt(0).toUpperCase() }}
+          </div>
+
+          <div class="skill-identity">
+            <h3>{{ competence.nom }}</h3>
+            <span class="category-chip">{{ competence.categorie }}</span>
+          </div>
+
+          <div class="skill-actions">
+            <button
+              type="button"
+              class="icon-btn edit-btn"
+              title="Modifier"
+              aria-label="Modifier la compétence"
+              (click)="ouvrirModification(competence)"
+            >✎</button>
+
+            <button
+              type="button"
+              class="icon-btn delete-btn"
+              title="Supprimer"
+              aria-label="Supprimer la compétence"
+              (click)="supprimerCompetence(competence)"
+            >×</button>
+          </div>
+        </div>
+
+        <div class="skill-level">
+          <div class="level-labels">
+            <span>Niveau de maîtrise</span>
+            <strong>{{ competence.niveau }}%</strong>
+          </div>
+
+          <div
+            class="progress-track"
+            role="progressbar"
+            [attr.aria-valuenow]="competence.niveau"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [attr.aria-label]="'Niveau de ' + competence.nom"
+          >
+            <div
+              class="progress-fill"
+              [style.width.%]="competence.niveau"
+            ></div>
+          </div>
+
+          <div class="level-footer">
+            <span
+              [class.level-advanced]="competence.niveau >= 80"
+              [class.level-intermediate]="competence.niveau >= 50 && competence.niveau < 80"
+              [class.level-beginner]="competence.niveau < 50"
+            >
+              {{ competence.niveau >= 80
+                ? 'Avancé'
+                : competence.niveau >= 50
+                  ? 'Intermédiaire'
+                  : 'Débutant' }}
+            </span>
+            <span>Sur 100</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div
+    class="modal-backdrop"
+    *ngIf="formulaireOuvert"
+    (click)="fermerFormulaire()"
+  >
+    <section
+      class="skill-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="modal-header">
+        <div>
+          <span class="eyebrow">PORTFOLIO · COMPÉTENCES</span>
+          <h2 id="modal-title">
+            {{ modeModification ? 'Modifier la compétence' : 'Nouvelle compétence' }}
+          </h2>
+          <p>
+            {{ modeModification
+              ? 'Mets à jour les informations de cette compétence.'
+              : 'Ajoute une expertise à ton profil professionnel.' }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Fermer le formulaire"
+          [disabled]="enregistrement"
+          (click)="fermerFormulaire()"
+        >×</button>
+      </header>
+
+      <form #skillForm="ngForm" (ngSubmit)="enregistrerCompetence()">
+        <div class="form-field">
+          <label for="skill-name">Nom de la compétence <span>*</span></label>
+          <input
+            id="skill-name"
+            name="nom"
+            type="text"
+            [(ngModel)]="formulaire.nom"
+            placeholder="Ex. Angular, Spring Boot, Flutter..."
+            maxlength="100"
+            required
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="skill-category">Catégorie <span>*</span></label>
+          <input
+            id="skill-category"
+            name="categorie"
+            type="text"
+            [(ngModel)]="formulaire.categorie"
+            placeholder="Ex. Frontend, Backend, Base de données..."
+            maxlength="100"
+            list="skill-categories"
+            required
+          />
+          <datalist id="skill-categories">
+            <option *ngFor="let categorie of categories" [value]="categorie"></option>
+          </datalist>
+        </div>
+
+        <div class="form-field">
+          <div class="range-heading">
+            <label for="skill-level">Niveau de maîtrise <span>*</span></label>
+            <strong>{{ formulaire.niveau }}%</strong>
+          </div>
+
+          <input
+            id="skill-level"
+            class="range-input"
+            name="niveau"
+            type="range"
+            min="0"
+            max="100"
+            step="5"
+            [(ngModel)]="formulaire.niveau"
+            required
+          />
+
+          <div class="range-labels">
+            <span>Débutant</span>
+            <span>Intermédiaire</span>
+            <span>Avancé</span>
+          </div>
+        </div>
+
+        <div class="modal-preview">
+          <div class="preview-avatar">
+            {{ (formulaire.nom || '?').charAt(0).toUpperCase() }}
+          </div>
+          <div class="preview-content">
+            <strong>{{ formulaire.nom || 'Nom de la compétence' }}</strong>
+            <span>{{ formulaire.categorie || 'Catégorie' }}</span>
+          </div>
+          <strong class="preview-level">{{ formulaire.niveau }}%</strong>
+        </div>
+
+        <div class="form-error" *ngIf="erreur">
+          {{ erreur }}
+        </div>
+
+        <footer class="modal-footer">
+          <button
+            type="button"
+            class="secondary-btn"
+            [disabled]="enregistrement"
+            (click)="fermerFormulaire()"
+          >
+            Annuler
+          </button>
+
+          <button
+            type="submit"
+            class="primary-btn"
+            [disabled]="enregistrement || skillForm.invalid"
+          >
+            <span *ngIf="!enregistrement">
+              {{ modeModification ? 'Enregistrer les modifications' : 'Ajouter la compétence' }}
+            </span>
+            <span *ngIf="enregistrement">Enregistrement...</span>
+          </button>
+        </footer>
+      </form>
+    </section>
+  </div>
+</section>

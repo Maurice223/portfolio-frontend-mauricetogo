@@ -1,0 +1,230 @@
+<section class="projects-page">
+    <header class="page-header">
+        <div>
+            <span class="eyebrow">ESPACE ADMINISTRATEUR</span>
+            <h1>Gestion des projets</h1>
+            <p>Ajoute, organise et mets à jour les projets de ton portfolio.</p>
+        </div>
+
+        <button class="primary-button" type="button" (click)="ouvrirCreation()">
+            <span class="button-icon">＋</span>
+            Nouveau projet
+        </button>
+    </header>
+
+    <div class="stats-grid">
+
+        <article class="stat-card">
+            <div class="stat-icon blue">▦</div>
+            <div>
+                <span class="stat-label">Total des projets</span>
+                <strong>{{ projets.length }}</strong>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon violet">⌘</div>
+            <div>
+                <span class="stat-label">Technologies utilisées</span>
+                <strong>
+                    {{
+                    projets
+                    .flatMap(p => (p.technologies || '').split(','))
+                    .map(t => t.trim().toLowerCase())
+                    .filter(t => t.length > 0)
+                    .filter((t, i, a) => a.indexOf(t) === i)
+                    .length
+                    }}
+                </strong>
+            </div>
+        </article>
+    </div>
+    <div class="toolbar">
+        <div class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input type="search" [(ngModel)]="recherche" placeholder="Rechercher un projet, une technologie..."
+                aria-label="Rechercher un projet" />
+        </div>
+
+        <button class="secondary-button" type="button" (click)="chargerProjets()" [disabled]="chargement">
+            ↻ Actualiser
+        </button>
+    </div>
+
+    <div class="alert alert-error" *ngIf="erreur" role="alert">
+        <span>{{ erreur }}</span>
+        <button type="button" (click)="erreur = ''" aria-label="Fermer">×</button>
+    </div>
+
+    <div class="alert alert-success" *ngIf="succes" role="status">
+        <span>{{ succes }}</span>
+        <button type="button" (click)="succes = ''" aria-label="Fermer">×</button>
+    </div>
+
+    <div class="loading-panel" *ngIf="chargement">
+        <span class="spinner"></span>
+        <p>Chargement des projets...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="!chargement && projetsFiltres.length === 0">
+        <div class="empty-icon">▧</div>
+        <h2>{{ recherche ? 'Aucun résultat' : 'Aucun projet pour le moment' }}</h2>
+        <p>
+            {{
+            recherche
+            ? 'Essaie un autre terme de recherche.'
+            : 'Commence par ajouter ton premier projet au portfolio.'
+            }}
+        </p>
+
+        <button *ngIf="!recherche" class="primary-button" type="button" (click)="ouvrirCreation()">
+            Ajouter mon premier projet
+        </button>
+    </div>
+
+    <div class="projects-grid" *ngIf="!chargement && projetsFiltres.length > 0">
+        <article class="project-card" *ngFor="let projet of projetsFiltres">
+            <div class="project-image">
+                <img *ngIf="projet.image" [src]="projet.image" [alt]="projet.titre" loading="lazy"
+                    (error)="imageIndisponible($event)" />
+
+                <div class="image-placeholder">
+                    <span>▦</span>
+                    <small>Aperçu du projet</small>
+                </div>
+
+                <span class="project-id" *ngIf="projet.id != null">
+                    #{{ projet.id }}
+                </span>
+            </div>
+
+            <div class="project-content">
+                <div class="project-heading">
+                    <h2>{{ projet.titre }}</h2>
+                    <span class="project-date">{{ projet.dateCreation || '—' }}</span>
+                </div>
+
+                <p class="project-description">{{ projet.description }}</p>
+
+                <div class="technologies">
+                    <ng-container *ngFor="let technologie of (projet.technologies || '').split(',')">
+                        <span class="technology" *ngIf="technologie.trim()">
+                            {{ technologie.trim() }}
+                        </span>
+                    </ng-container>
+                </div>
+
+                <div class="project-links">
+                    <button *ngIf="projet.lienGithub" type="button" class="link-button"
+                        (click)="ouvrirLien(projet.lienGithub)">
+                        ↗ GitHub
+                    </button>
+
+                    <button *ngIf="projet.lienDemo" type="button" class="link-button"
+                        (click)="ouvrirLien(projet.lienDemo)">
+                        ↗ Démo
+                    </button>
+                </div>
+
+                <div class="card-actions">
+                    <button type="button" class="edit-button" (click)="ouvrirModification(projet)">
+                        ✎ Modifier
+                    </button>
+
+                    <button type="button" class="delete-button" (click)="supprimerProjet(projet)">
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <div class="modal-backdrop" *ngIf="formulaireOuvert">
+        <section class="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
+            <header class="modal-header">
+                <div>
+                    <span class="eyebrow">PORTFOLIO</span>
+                    <h2 id="project-modal-title">
+                        {{ modeEdition ? 'Modifier le projet' : 'Créer un projet' }}
+                    </h2>
+                    <p>Renseigne les informations du projet ci-dessous.</p>
+                </div>
+
+                <button class="close-button" type="button" (click)="fermerFormulaire()" [disabled]="enregistrement"
+                    aria-label="Fermer le formulaire">
+                    ×
+                </button>
+            </header>
+
+            <form (ngSubmit)="enregistrerProjet()" #projetForm="ngForm">
+                <div class="form-grid">
+                    <div class="form-field full-width">
+                        <label for="titre">Titre du projet *</label>
+                        <input id="titre" name="titre" [(ngModel)]="formulaire.titre" required maxlength="150"
+                            placeholder="Ex. : TechPlus — Plateforme e-learning" />
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="description">Description *</label>
+                        <textarea id="description" name="description" [(ngModel)]="formulaire.description" required
+                            rows="4"
+                            placeholder="Explique le problème résolu et les fonctionnalités principales..."></textarea>
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="image">URL de l'image</label>
+                        <input id="image" name="image" [(ngModel)]="formulaire.image" type="url"
+                            placeholder="https://exemple.com/image.jpg" />
+                        <small>Utilise une URL accessible publiquement.</small>
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="technologies">Technologies</label>
+                        <input id="technologies" name="technologies" [(ngModel)]="formulaire.technologies"
+                            placeholder="Angular, Spring Boot, PostgreSQL" />
+                        <small>Sépare les technologies par des virgules.</small>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="lienGithub">Lien GitHub</label>
+                        <input id="lienGithub" name="lienGithub" [(ngModel)]="formulaire.lienGithub" type="url"
+                            placeholder="https://github.com/..." />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="lienDemo">Lien de démonstration</label>
+                        <input id="lienDemo" name="lienDemo" [(ngModel)]="formulaire.lienDemo" type="url"
+                            placeholder="https://..." />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="dateCreation">Date du projet</label>
+                        <input id="dateCreation" name="dateCreation" [(ngModel)]="formulaire.dateCreation"
+                            type="date" />
+                    </div>
+                </div>
+
+                <div class="alert alert-error" *ngIf="erreur" role="alert">
+                    {{ erreur }}
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="secondary-button" (click)="fermerFormulaire()"
+                        [disabled]="enregistrement">
+                        Annuler
+                    </button>
+
+                    <button type="submit" class="primary-button" [disabled]="!projetForm.valid || enregistrement">
+                        {{
+                        enregistrement
+                        ? 'Enregistrement...'
+                        : modeEdition
+                        ? 'Enregistrer les modifications'
+                        : 'Créer le projet'
+                        }}
+                    </button>
+                </footer>
+            </form>
+        </section>
+    </div>
+</section>

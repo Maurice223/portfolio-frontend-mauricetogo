@@ -1,0 +1,329 @@
+
+<section class="formations-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">ESPACE ADMINISTRATION</span>
+      <h1>Formations & Diplômes</h1>
+      <p>Gère ton parcours académique, tes diplômes et tes établissements.</p>
+    </div>
+
+    <button type="button" class="primary-btn" (click)="ouvrirAjout()">
+      <span class="plus-icon">+</span>
+      Ajouter une formation
+    </button>
+  </header>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-icon blue-icon">▤</div>
+      <div>
+        <span class="stat-label">Formations enregistrées</span>
+        <strong>{{ totalFormations }}</strong>
+        <small>Parcours académique</small>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon violet-icon">⌂</div>
+      <div>
+        <span class="stat-label">Établissements</span>
+        <strong>{{ totalEtablissements }}</strong>
+        <small>Écoles et universités</small>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon cyan-icon">◷</div>
+      <div>
+        <span class="stat-label">En cours</span>
+        <strong>{{ totalEnCours }}</strong>
+        <small>Sans date de fin renseignée</small>
+      </div>
+    </article>
+  </div>
+
+  <div class="feedback success-message" *ngIf="messageSucces">
+    <span>✓</span>
+    {{ messageSucces }}
+    <button type="button" aria-label="Fermer" (click)="messageSucces = ''">×</button>
+  </div>
+
+  <div class="feedback error-message" *ngIf="messageErreur">
+    <span>!</span>
+    {{ messageErreur }}
+    <button type="button" aria-label="Fermer" (click)="messageErreur = ''">×</button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input
+        type="search"
+        [(ngModel)]="recherche"
+        placeholder="Rechercher un diplôme, une école..."
+        aria-label="Rechercher une formation"
+      />
+      <button
+        *ngIf="recherche"
+        type="button"
+        class="clear-search"
+        aria-label="Effacer la recherche"
+        (click)="recherche = ''"
+      >×</button>
+    </div>
+
+    <button
+      type="button"
+      class="secondary-btn"
+      (click)="chargerFormations()"
+      [disabled]="chargement"
+    >
+      ↻ Actualiser
+    </button>
+  </div>
+
+  <div class="loading-state" *ngIf="chargement">
+    <span class="spinner"></span>
+    <p>Chargement des formations...</p>
+  </div>
+
+  <div
+    class="formations-grid"
+    *ngIf="!chargement && formationsFiltrees.length > 0"
+  >
+    <article
+      class="formation-card"
+      *ngFor="let formation of formationsFiltrees; let i = index; trackBy: suivreFormation"
+    >
+      <div class="formation-card-top">
+        <div class="diploma-icon">✦</div>
+
+        <div class="card-actions">
+          <button
+            type="button"
+            class="icon-btn edit-btn"
+            title="Modifier"
+            aria-label="Modifier cette formation"
+            (click)="ouvrirModification(formation)"
+          >✎</button>
+
+          <button
+            type="button"
+            class="icon-btn delete-btn"
+            title="Supprimer"
+            aria-label="Supprimer cette formation"
+            [disabled]="suppressionId !== null"
+            (click)="supprimerFormation(formation)"
+          >⌫</button>
+        </div>
+      </div>
+
+      <div class="formation-badges">
+        <span class="level-badge">{{ formation.niveau }}</span>
+        <span
+          class="status-badge"
+          [class.status-current]="!formation.dateFin"
+        >
+          {{ formation.dateFin ? 'Terminée' : 'En cours / à compléter' }}
+        </span>
+      </div>
+
+      <h2>{{ formation.titre }}</h2>
+
+      <p class="school-name">
+        <span class="school-icon">▣</span>
+        {{ formation.ecole }}
+      </p>
+
+      <p class="formation-description">{{ formation.description }}</p>
+
+      <div class="formation-period">
+        <span class="calendar-icon">▦</span>
+        <span>{{ afficherPeriode(formation) }}</span>
+      </div>
+
+      <footer class="formation-footer">
+        <span class="record-indicator"></span>
+        Enregistrée dans le portfolio
+        <span class="record-id" *ngIf="formation.id">
+          #{{ formation.id }}
+        </span>
+      </footer>
+    </article>
+  </div>
+
+  <div
+    class="empty-state"
+    *ngIf="!chargement && formationsFiltrees.length === 0"
+  >
+    <div class="empty-icon">▤</div>
+    <h2>
+      {{ recherche ? 'Aucune formation trouvée' : 'Ton parcours commence ici' }}
+    </h2>
+    <p>
+      {{
+        recherche
+          ? 'Essaie avec un autre diplôme ou un autre établissement.'
+          : 'Ajoute tes formations et diplômes pour valoriser ton parcours académique.'
+      }}
+    </p>
+
+    <button
+      *ngIf="!recherche"
+      type="button"
+      class="primary-btn"
+      (click)="ouvrirAjout()"
+    >
+      + Ajouter une formation
+    </button>
+
+    <button
+      *ngIf="recherche"
+      type="button"
+      class="secondary-btn"
+      (click)="recherche = ''"
+    >
+      Effacer la recherche
+    </button>
+  </div>
+</section>
+
+<div
+  class="modal-backdrop"
+  *ngIf="formulaireVisible"
+  (click)="fermerFormulaire()"
+>
+  <section
+    class="formation-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="formation-modal-title"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="modal-header">
+      <div>
+        <span class="eyebrow">PORTFOLIO · PARCOURS ACADÉMIQUE</span>
+        <h2 id="formation-modal-title">
+          {{ modification ? 'Modifier la formation' : 'Nouvelle formation' }}
+        </h2>
+        <p>Renseigne les informations de ton parcours académique.</p>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        aria-label="Fermer"
+        [disabled]="sauvegarde"
+        (click)="fermerFormulaire()"
+      >×</button>
+    </header>
+
+    <form #formationForm="ngForm" (ngSubmit)="enregistrer()">
+      <div class="form-grid">
+        <div class="form-field full-width">
+          <label for="titre">Intitulé du diplôme / formation <span>*</span></label>
+          <input
+            id="titre"
+            name="titre"
+            type="text"
+            [(ngModel)]="formulaire.titre"
+            placeholder="Ex. Licence en Génie logiciel"
+            required
+            maxlength="200"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="ecole">Établissement <span>*</span></label>
+          <input
+            id="ecole"
+            name="ecole"
+            type="text"
+            [(ngModel)]="formulaire.ecole"
+            placeholder="Ex. USTTB / FST"
+            required
+            maxlength="200"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="niveau">Niveau d'études <span>*</span></label>
+          <input
+            id="niveau"
+            name="niveau"
+            type="text"
+            [(ngModel)]="formulaire.niveau"
+            placeholder="Ex. Licence 2, Master, DUT..."
+            required
+            maxlength="100"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="dateDebut">Date de début <span>*</span></label>
+          <input
+            id="dateDebut"
+            name="dateDebut"
+            type="date"
+            [(ngModel)]="formulaire.dateDebut"
+            required
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="dateFin">Date de fin</label>
+          <input
+            id="dateFin"
+            name="dateFin"
+            type="date"
+            [(ngModel)]="formulaire.dateFin"
+            [min]="formulaire.dateDebut || null"
+          />
+          <small>Laisse vide si la formation est toujours en cours.</small>
+        </div>
+
+        <div class="form-field full-width">
+          <label for="description">Description <span>*</span></label>
+          <textarea
+            id="description"
+            name="description"
+            [(ngModel)]="formulaire.description"
+            placeholder="Présente les matières étudiées, les acquis et les projets réalisés..."
+            rows="5"
+            required
+            maxlength="5000"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="form-error" *ngIf="messageErreur">
+        {{ messageErreur }}
+      </div>
+
+      <footer class="modal-footer">
+        <button
+          type="button"
+          class="secondary-btn"
+          [disabled]="sauvegarde"
+          (click)="fermerFormulaire()"
+        >
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          class="primary-btn"
+          [disabled]="sauvegarde || formationForm.invalid"
+        >
+          {{
+            sauvegarde
+              ? 'Enregistrement...'
+              : modification
+                ? 'Enregistrer les modifications'
+                : 'Créer la formation'
+          }}
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>

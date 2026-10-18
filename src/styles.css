@@ -1,0 +1,11 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@import 'aos/dist/aos.css';
+
+html {
+    scroll-behavior: smooth;
+}
+
+body{
+    background:#030712;
+}

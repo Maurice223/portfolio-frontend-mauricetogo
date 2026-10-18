@@ -1,0 +1,346 @@
+<section id="experience" class="py-24 bg-gray-950 text-white">
+
+
+  <div class="max-w-6xl mx-auto px-6">
+
+
+    <!-- TITRE -->
+
+    <div class="text-center mb-20">
+
+
+      <h2 class="text-4xl md:text-5xl font-black">
+
+        Mes 
+        <span class="text-blue-500">
+          expériences
+        </span>
+
+      </h2>
+
+
+      <p class="text-gray-400 mt-5 text-lg">
+        Mon parcours professionnel et mes réalisations.
+      </p>
+
+
+    </div>
+
+
+
+
+    <!-- TIMELINE -->
+
+
+    <div class="relative">
+
+
+      <!-- Ligne centrale desktop -->
+
+      <div
+      class="
+      hidden md:block
+      absolute
+      left-1/2
+      top-0
+      transform
+      -translate-x-1/2
+      h-full
+      w-1
+      bg-gradient-to-b
+      from-blue-500
+      to-purple-600
+      ">
+      </div>
+
+
+
+
+      @if(experiences.length > 0){
+
+
+        @for(exp of experiences; track exp.id; let i = $index){
+
+
+
+          <div
+          class="
+          relative
+          flex
+          flex-col
+          md:flex-row
+          items-center
+          justify-between
+          mb-14
+          "
+          >
+
+
+
+
+
+            <!-- GAUCHE -->
+
+
+            @if(i % 2 === 0){
+
+
+              <div
+              class="
+              md:w-5/12
+              bg-gray-900/80
+              backdrop-blur
+              border
+              border-gray-800
+              rounded-2xl
+              p-7
+              shadow-xl
+              hover:border-blue-500
+              hover:-translate-y-2
+              transition
+              duration-500
+              ">
+
+
+                <span
+                class="
+                text-sm
+                text-blue-400
+                "
+                >
+
+                {{exp.dateDebut}} - {{exp.dateFin}}
+
+                </span>
+
+
+
+                <h3
+                class="
+                text-2xl
+                font-bold
+                mt-3
+                "
+                >
+
+                {{exp.poste}}
+
+                </h3>
+
+
+
+                <p
+                class="
+                text-blue-500
+                font-semibold
+                mt-2
+                "
+                >
+
+                {{exp.entreprise}}
+
+                </p>
+
+
+
+
+                <p
+                class="
+                text-gray-400
+                leading-7
+                mt-4
+                "
+                >
+
+                {{exp.description}}
+
+                </p>
+
+
+              </div>
+
+
+
+
+              <!-- POINT CENTRAL -->
+
+
+              <div data-aos="fade-right"
+              class="
+              hidden
+              md:flex
+              w-10
+              h-10
+              rounded-full
+              bg-blue-600
+              border-4
+              border-gray-950
+              z-10
+              items-center
+              justify-center
+              "
+              >
+
+              💼
+
+              </div>
+
+
+
+              <div class="hidden md:block md:w-5/12"></div>
+
+
+
+            }
+
+
+
+            <!-- DROITE -->
+
+
+            @else {
+
+
+
+              <div data-aos="fade-left" class="hidden md:block md:w-5/12"></div>
+
+
+
+
+              <div
+              class="
+              hidden
+              md:flex
+              w-10
+              h-10
+              rounded-full
+              bg-purple-600
+              border-4
+              border-gray-950
+              z-10
+              items-center
+              justify-center
+              "
+              >
+
+              🚀
+
+              </div>
+
+
+
+
+
+              <div
+              class="
+              md:w-5/12
+              bg-gray-900/80
+              backdrop-blur
+              border
+              border-gray-800
+              rounded-2xl
+              p-7
+              shadow-xl
+              hover:border-purple-500
+              hover:-translate-y-2
+              transition
+              duration-500
+              ">
+
+
+                <span
+                class="text-sm text-purple-400"
+                >
+
+                {{exp.dateDebut}} - {{exp.dateFin}}
+
+                </span>
+
+
+
+                <h3
+                class="
+                text-2xl
+                font-bold
+                mt-3
+                "
+                >
+
+                {{exp.poste}}
+
+                </h3>
+
+
+
+
+                <p
+                class="
+                text-purple-500
+                font-semibold
+                mt-2
+                "
+                >
+
+                {{exp.entreprise}}
+
+                </p>
+
+
+
+
+                <p
+                class="
+                text-gray-400
+                leading-7
+                mt-4
+                "
+                >
+
+                {{exp.description}}
+
+                </p>
+
+
+
+              </div>
+
+
+
+            }
+
+
+
+          </div>
+
+
+
+        }
+
+
+      }
+
+
+
+      @else {
+
+
+        <p class="text-center text-gray-500 text-xl">
+
+          Aucune expérience disponible.
+
+        </p>
+
+
+      }
+
+
+
+    </div>
+
+
+
+  </div>
+
+
+
+</section>

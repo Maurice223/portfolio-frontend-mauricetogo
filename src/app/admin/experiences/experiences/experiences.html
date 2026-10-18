@@ -1,0 +1,313 @@
+
+<section class="experiences-page">
+  <header class="page-header">
+    <div>
+      <span class="eyebrow">ESPACE ADMINISTRATION</span>
+      <h1>Expériences professionnelles</h1>
+      <p>Gère ton parcours professionnel et les expériences affichées sur ton portfolio.</p>
+    </div>
+
+    <button class="primary-btn" type="button" (click)="ouvrirAjout()">
+      <span class="plus-icon">+</span>
+      Ajouter une expérience
+    </button>
+  </header>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-icon blue-icon">▤</div>
+      <div>
+        <span class="stat-label">Expériences enregistrées</span>
+        <strong>{{ totalExperiences }}</strong>
+        <small>Dans ton portfolio</small>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon violet-icon">↗</div>
+      <div>
+        <span class="stat-label">Résultats affichés</span>
+        <strong>{{ experiencesFiltrees.length }}</strong>
+        <small>Selon ta recherche</small>
+      </div>
+    </article>
+  </div>
+
+  <div class="feedback success-message" *ngIf="messageSucces">
+    <span>✓</span> {{ messageSucces }}
+    <button type="button" aria-label="Fermer" (click)="messageSucces = ''">×</button>
+  </div>
+
+  <div class="feedback error-message" *ngIf="messageErreur">
+    <span>!</span> {{ messageErreur }}
+    <button type="button" aria-label="Fermer" (click)="messageErreur = ''">×</button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="search-icon">⌕</span>
+      <input
+        type="search"
+        [(ngModel)]="recherche"
+        placeholder="Rechercher un poste, une entreprise..."
+        aria-label="Rechercher une expérience"
+      />
+      <button
+        *ngIf="recherche"
+        type="button"
+        class="clear-search"
+        aria-label="Effacer la recherche"
+        (click)="recherche = ''"
+      >×</button>
+    </div>
+
+    <button
+      type="button"
+      class="secondary-btn"
+      (click)="chargerExperiences()"
+      [disabled]="chargement"
+    >
+      ↻ Actualiser
+    </button>
+  </div>
+
+  <div class="loading-state" *ngIf="chargement">
+    <span class="spinner"></span>
+    <p>Chargement des expériences...</p>
+  </div>
+
+  <div class="experience-list" *ngIf="!chargement && experiencesFiltrees.length">
+    <article
+      class="experience-card"
+      *ngFor="let experience of experiencesFiltrees; let i = index; trackBy: suivreExperience"
+    >
+      <div class="timeline">
+        <div class="timeline-dot"></div>
+        <div class="timeline-line" *ngIf="i < experiencesFiltrees.length - 1"></div>
+      </div>
+
+      <div class="experience-content">
+        <div class="experience-top">
+          <div class="experience-heading">
+            <span class="experience-period">
+              {{ afficherPeriode(experience) }}
+            </span>
+            <h2>{{ experience.poste }}</h2>
+            <p class="company-name">
+              <span class="company-icon">▣</span>
+              {{ experience.entreprise }}
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <button
+              class="icon-btn edit-btn"
+              type="button"
+              title="Modifier"
+              aria-label="Modifier cette expérience"
+              (click)="ouvrirModification(experience)"
+            >✎</button>
+
+            <button
+              class="icon-btn delete-btn"
+              type="button"
+              title="Supprimer"
+              aria-label="Supprimer cette expérience"
+              (click)="supprimerExperience(experience)"
+            >⌫</button>
+          </div>
+        </div>
+
+        <p class="experience-description">{{ experience.description }}</p>
+
+        <div
+          class="technology-list"
+          *ngIf="experience.technologies"
+        >
+          <span class="technology-label">TECHNOLOGIES</span>
+          <span
+            class="technology-tag"
+            *ngFor="let technologie of experience.technologies.split(',')"
+          >
+            {{ technologie.trim() }}
+          </span>
+        </div>
+
+        <div class="experience-footer">
+          <span class="record-indicator"></span>
+          Enregistrée dans le portfolio
+          <span class="record-id" *ngIf="experience.id">
+            ID #{{ experience.id }}
+          </span>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div
+    class="empty-state"
+    *ngIf="!chargement && experiencesFiltrees.length === 0"
+  >
+    <div class="empty-icon">▤</div>
+    <h2>{{ recherche ? 'Aucun résultat trouvé' : 'Aucune expérience pour le moment' }}</h2>
+    <p>
+      {{
+        recherche
+          ? 'Essaie un autre terme de recherche.'
+          : 'Ajoute ta première expérience professionnelle pour enrichir ton portfolio.'
+      }}
+    </p>
+    <button
+      *ngIf="!recherche"
+      type="button"
+      class="primary-btn"
+      (click)="ouvrirAjout()"
+    >
+      + Ajouter une expérience
+    </button>
+    <button
+      *ngIf="recherche"
+      type="button"
+      class="secondary-btn"
+      (click)="recherche = ''"
+    >
+      Effacer la recherche
+    </button>
+  </div>
+</section>
+
+<div
+  class="modal-backdrop"
+  *ngIf="formulaireVisible"
+  (click)="fermerFormulaire()"
+>
+  <section
+    class="experience-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="experience-modal-title"
+    (click)="$event.stopPropagation()"
+  >
+    <header class="modal-header">
+      <div>
+        <span class="eyebrow">PORTFOLIO · PARCOURS</span>
+        <h2 id="experience-modal-title">
+          {{ modification ? 'Modifier l’expérience' : 'Nouvelle expérience' }}
+        </h2>
+        <p>Renseigne les informations de ton expérience professionnelle.</p>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        aria-label="Fermer"
+        [disabled]="sauvegarde"
+        (click)="fermerFormulaire()"
+      >×</button>
+    </header>
+
+    <form (ngSubmit)="enregistrer()" #experienceForm="ngForm">
+      <div class="form-grid">
+        <div class="form-field full-width">
+          <label for="poste">Intitulé du poste <span>*</span></label>
+          <input
+            id="poste"
+            name="poste"
+            type="text"
+            [(ngModel)]="formulaire.poste"
+            placeholder="Ex. Développeur Full Stack"
+            required
+            maxlength="150"
+          />
+        </div>
+
+        <div class="form-field full-width">
+          <label for="entreprise">Entreprise / Organisation <span>*</span></label>
+          <input
+            id="entreprise"
+            name="entreprise"
+            type="text"
+            [(ngModel)]="formulaire.entreprise"
+            placeholder="Ex. TechPlus"
+            required
+            maxlength="150"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="dateDebut">Date de début <span>*</span></label>
+          <input
+            id="dateDebut"
+            name="dateDebut"
+            type="date"
+            [(ngModel)]="formulaire.dateDebut"
+            required
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="dateFin">Date de fin</label>
+          <input
+            id="dateFin"
+            name="dateFin"
+            type="date"
+            [(ngModel)]="formulaire.dateFin"
+            [min]="formulaire.dateDebut || null"
+          />
+          <small>Laisse vide si tu occupes encore ce poste.</small>
+        </div>
+
+        <div class="form-field full-width">
+          <label for="description">Description <span>*</span></label>
+          <textarea
+            id="description"
+            name="description"
+            [(ngModel)]="formulaire.description"
+            placeholder="Décris tes missions, tes responsabilités et tes réalisations..."
+            rows="5"
+            required
+            maxlength="5000"
+          ></textarea>
+        </div>
+
+        <div class="form-field full-width">
+          <label for="technologies">Technologies utilisées</label>
+          <input
+            id="technologies"
+            name="technologies"
+            type="text"
+            [(ngModel)]="formulaire.technologies"
+            placeholder="Ex. Angular, Spring Boot, PostgreSQL"
+          />
+          <small>Sépare les technologies par des virgules.</small>
+        </div>
+      </div>
+
+      <div class="form-error" *ngIf="messageErreur">
+        {{ messageErreur }}
+      </div>
+
+      <footer class="modal-footer">
+        <button
+          type="button"
+          class="secondary-btn"
+          [disabled]="sauvegarde"
+          (click)="fermerFormulaire()"
+        >
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          class="primary-btn"
+          [disabled]="sauvegarde || experienceForm.invalid"
+        >
+          <span *ngIf="!sauvegarde">
+            {{ modification ? 'Enregistrer les modifications' : 'Créer l’expérience' }}
+          </span>
+          <span *ngIf="sauvegarde">Enregistrement...</span>
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>

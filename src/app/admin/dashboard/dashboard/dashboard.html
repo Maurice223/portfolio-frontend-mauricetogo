@@ -1,0 +1,298 @@
+
+<div class="dashboard">
+
+  <section class="welcome">
+    <div class="welcome-copy">
+      <div class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        ESPACE ADMINISTRATEUR
+      </div>
+
+      <h1>Bonjour, Maurice <span class="wave">✦</span></h1>
+
+      <p class="description">
+        Voici ce qui se passe sur ton portfolio aujourd'hui.
+        Gère tes contenus et suis leur évolution depuis un seul espace.
+      </p>
+
+      <a routerLink="/" target="_blank" rel="noopener" class="preview-link">
+        <span>↗</span> Voir le portfolio public
+      </a>
+    </div>
+
+    <div class="welcome-art" aria-hidden="true">
+      <div class="art-orbit orbit-one"></div>
+      <div class="art-orbit orbit-two"></div>
+      <div class="art-core">M<span>.</span></div>
+      <span class="art-star star-one">✦</span>
+      <span class="art-star star-two">✧</span>
+    </div>
+  </section>
+
+  @if (loading) {
+    <div class="loading-panel">
+      <span class="spinner"></span>
+      <span>Chargement des données du portfolio...</span>
+    </div>
+  }
+
+  @if (error && !loading) {
+    <div class="notice">
+      <span class="notice-icon">!</span>
+      <span>{{ error }}</span>
+    </div>
+  }
+
+  <section class="section-block">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">VUE D'ENSEMBLE</p>
+        <h2>Les chiffres clés</h2>
+      </div>
+      <span class="live-indicator">
+        <span></span> Données de l'API
+      </span>
+    </div>
+
+    <div class="stats-grid">
+
+      <article class="stat-card projects-card">
+        <div class="stat-top">
+          <div class="stat-icon icon-blue">
+            <span>▤</span>
+          </div>
+          <span class="stat-tag">PORTFOLIO</span>
+        </div>
+        <p class="stat-label">Projets</p>
+        <div class="stat-value">
+          @if (loading) {
+            <span class="skeleton-number"></span>
+          } @else {
+            <strong>{{ projets }}</strong>
+          }
+        </div>
+        <a routerLink="/admin/projects" class="stat-link">
+          Gérer les projets <span>→</span>
+        </a>
+      </article>
+
+      <article class="stat-card skills-card">
+        <div class="stat-top">
+          <div class="stat-icon icon-violet">
+            <span>⌘</span>
+          </div>
+          <span class="stat-tag">TECHNOLOGIES</span>
+        </div>
+        <p class="stat-label">Compétences</p>
+        <div class="stat-value">
+          @if (loading) {
+            <span class="skeleton-number"></span>
+          } @else {
+            <strong>{{ competences }}</strong>
+          }
+        </div>
+        <a routerLink="/admin/skills" class="stat-link">
+          Gérer les compétences <span>→</span>
+        </a>
+      </article>
+
+      <article class="stat-card experience-card">
+        <div class="stat-top">
+          <div class="stat-icon icon-cyan">
+            <span>◷</span>
+          </div>
+          <span class="stat-tag">PARCOURS</span>
+        </div>
+        <p class="stat-label">Expériences</p>
+        <div class="stat-value">
+          @if (loading) {
+            <span class="skeleton-number"></span>
+          } @else {
+            <strong>{{ experiences }}</strong>
+          }
+        </div>
+        <a routerLink="/admin/experiences" class="stat-link">
+          Gérer les expériences <span>→</span>
+        </a>
+      </article>
+
+      <article class="stat-card education-card">
+        <div class="stat-top">
+          <div class="stat-icon icon-green">
+            <span>▧</span>
+          </div>
+          <span class="stat-tag">FORMATION</span>
+        </div>
+        <p class="stat-label">Formations</p>
+        <div class="stat-value">
+          @if (loading) {
+            <span class="skeleton-number"></span>
+          } @else {
+            <strong>{{ formations }}</strong>
+          }
+        </div>
+        <a routerLink="/admin/educations" class="stat-link">
+          Gérer les formations <span>→</span>
+        </a>
+      </article>
+
+      <article class="stat-card messages-card">
+        <div class="stat-top">
+          <div class="stat-icon icon-pink">
+            <span>✉</span>
+          </div>
+          <span class="stat-tag">CONTACT</span>
+        </div>
+        <p class="stat-label">Messages reçus</p>
+        <div class="stat-value">
+          @if (loading) {
+            <span class="skeleton-number"></span>
+          } @else {
+            <strong>{{ nombreMessages }}</strong>
+          }
+        </div>
+        <a routerLink="/admin/messages" class="stat-link">
+          Consulter les messages <span>→</span>
+        </a>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="bottom-grid">
+
+    <article class="panel recent-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">BOÎTE DE RÉCEPTION</p>
+          <h2>Messages récents</h2>
+        </div>
+
+        <a routerLink="/admin/messages" class="text-link">
+          Tout voir <span>→</span>
+        </a>
+      </div>
+
+      @if (loading) {
+        <div class="empty-state">
+          Chargement des messages...
+        </div>
+      } @else if (messagesRecents.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">✉</div>
+          <h3>Aucun message à afficher</h3>
+          <p>
+            Les messages envoyés depuis le formulaire de contact
+            apparaîtront ici lorsqu'ils seront disponibles.
+          </p>
+        </div>
+      } @else {
+        <div class="message-list">
+          @for (item of messagesRecents; track item.id ?? item.email) {
+            <a
+              routerLink="/admin/messages"
+              class="message-row"
+            >
+              <div class="message-avatar">
+                {{ initiales(item.nom) }}
+              </div>
+
+              <div class="message-content">
+                <div class="message-title-row">
+                  <strong>{{ item.nom || 'Contact' }}</strong>
+                  <time>
+                    @if (item.dateEnvoi) {
+                      {{ item.dateEnvoi | date:'dd/MM/yy HH:mm' }}
+                    } @else {
+                      Date inconnue
+                    }
+                  </time>
+                </div>
+
+                <span class="message-email">
+                  {{ item.email || 'Adresse indisponible' }}
+                </span>
+
+                <p>
+                  {{ item.sujet || 'Sans sujet' }} —
+                  {{ apercuMessage(item) }}
+                </p>
+              </div>
+
+              <span class="message-arrow">›</span>
+            </a>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="panel shortcuts-panel">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">PRODUCTIVITÉ</p>
+          <h2>Actions rapides</h2>
+        </div>
+      </div>
+
+      <p class="shortcuts-description">
+        Accède directement aux sections que tu utilises le plus.
+      </p>
+
+      <div class="shortcut-list">
+        <a routerLink="/admin/projects" class="shortcut">
+          <span class="shortcut-icon shortcut-blue">＋</span>
+          <span class="shortcut-text">
+            <strong>Gérer les projets</strong>
+            <small>Présente tes réalisations</small>
+          </span>
+          <span class="shortcut-arrow">↗</span>
+        </a>
+
+        <a routerLink="/admin/skills" class="shortcut">
+          <span class="shortcut-icon shortcut-violet">⌘</span>
+          <span class="shortcut-text">
+            <strong>Mettre à jour les compétences</strong>
+            <small>Actualise tes technologies</small>
+          </span>
+          <span class="shortcut-arrow">↗</span>
+        </a>
+
+        <a routerLink="/admin/experiences" class="shortcut">
+          <span class="shortcut-icon shortcut-cyan">◷</span>
+          <span class="shortcut-text">
+            <strong>Gérer les expériences</strong>
+            <small>Actualise ton parcours</small>
+          </span>
+          <span class="shortcut-arrow">↗</span>
+        </a>
+
+        <a routerLink="/admin/messages" class="shortcut">
+          <span class="shortcut-icon shortcut-pink">✉</span>
+          <span class="shortcut-text">
+            <strong>Ouvrir la messagerie</strong>
+            <small>{{ nombreMessages }} message(s) au total</small>
+          </span>
+          <span class="shortcut-arrow">↗</span>
+        </a>
+      </div>
+
+      <div class="profile-tip">
+        <span class="tip-icon">✦</span>
+        <div>
+          <strong>Conseil</strong>
+          <p>
+            Garde tes projets et tes compétences à jour
+            pour présenter un portfolio professionnel.
+          </p>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <footer class="dashboard-footer">
+    <span><span class="footer-dot"></span> Maurice.Dev Administration</span>
+    <span>Un espace pour construire la suite.</span>
+  </footer>
+
+</div>

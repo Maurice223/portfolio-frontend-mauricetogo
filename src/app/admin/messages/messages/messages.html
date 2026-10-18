@@ -1,0 +1,226 @@
+<section class="messages-page">
+    <header class="page-header">
+        <div class="header-copy">
+            <div class="eyebrow">
+                <span class="eyebrow-dot"></span>
+                ESPACE ADMINISTRATEUR
+            </div>
+
+            <h1>Messages <span>reçus</span></h1>
+
+            <p>
+                Consulte les demandes envoyées depuis le formulaire de contact
+                de ton portfolio.
+            </p>
+        </div>
+
+        <button type="button" class="refresh-button" (click)="actualiser()" [disabled]="chargement">
+            <span class="refresh-icon" [class.spinning]="chargement">↻</span>
+            Actualiser
+        </button>
+    </header>
+
+    <div class="stats-grid">
+        <article class="stat-card">
+            <div class="stat-icon total-icon">✉</div>
+            <div class="stat-info">
+                <span class="stat-label">Total des messages</span>
+                <strong>{{ messages.length }}</strong>
+                <small>Tous les messages enregistrés</small>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon recent-icon">◷</div>
+            <div class="stat-info">
+                <span class="stat-label">Cette semaine</span>
+                <strong>{{ messagesRecents }}</strong>
+                <small>Reçus au cours des 7 derniers jours</small>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon result-icon">⌕</div>
+            <div class="stat-info">
+                <span class="stat-label">Résultats affichés</span>
+                <strong>{{ messagesFiltres.length }}</strong>
+                <small>Selon ta recherche actuelle</small>
+            </div>
+        </article>
+    </div>
+
+    <div *ngIf="erreur" class="alert alert-error" role="alert">
+        <span>!</span>
+        <p>{{ erreur }}</p>
+        <button type="button" aria-label="Fermer" (click)="erreur = ''">×</button>
+    </div>
+
+    <div *ngIf="succes" class="alert alert-success" role="status">
+        <span>✓</span>
+        <p>{{ succes }}</p>
+        <button type="button" aria-label="Fermer" (click)="succes = ''">×</button>
+    </div>
+
+    <section class="inbox-card">
+        <div class="inbox-toolbar">
+            <div class="toolbar-title">
+                <div class="title-icon">☰</div>
+                <div>
+                    <h2>Boîte de réception</h2>
+                    <p>Les messages les plus récents apparaissent en premier.</p>
+                </div>
+            </div>
+
+            <label class="search-box">
+                <span class="search-icon">⌕</span>
+                <input type="search" [(ngModel)]="recherche" placeholder="Rechercher un message..."
+                    aria-label="Rechercher un message" />
+                <button *ngIf="recherche" type="button" class="clear-search" aria-label="Effacer la recherche"
+                    (click)="recherche = ''">×</button>
+            </label>
+        </div>
+
+        <div *ngIf="chargement" class="loading-state">
+            <span class="loader"></span>
+            <p>Chargement des messages...</p>
+        </div>
+
+        <div *ngIf="!chargement && messages.length === 0 && !erreur" class="empty-state">
+            <div class="empty-icon">✉</div>
+            <h3>Aucun message pour le moment</h3>
+            <p>Les messages envoyés depuis ton formulaire de contact apparaîtront ici.</p>
+        </div>
+
+        <div *ngIf="!chargement && messages.length > 0 && messagesFiltres.length === 0" class="empty-state">
+            <div class="empty-icon">⌕</div>
+            <h3>Aucun résultat</h3>
+            <p>Essaie avec un autre nom, une adresse email ou un mot-clé.</p>
+            <button type="button" class="text-button" (click)="recherche = ''">
+                Effacer la recherche
+            </button>
+        </div>
+
+        <div class="table-wrapper" *ngIf="!chargement && messagesFiltres.length > 0">
+            <table class="messages-table">
+                <thead>
+                    <tr>
+                        <th>EXPÉDITEUR</th>
+                        <th>SUJET</th>
+                        <th>MESSAGE</th>
+                        <th>DATE DE RÉCEPTION</th>
+                        <th class="actions-heading">ACTIONS</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let message of messagesFiltres">
+                        <td>
+                            <div class="sender-cell">
+                                <div class="avatar">{{ initiales(message.nom) }}</div>
+                                <div class="sender-details">
+                                    <strong>{{ message.nom }}</strong>
+                                    <a [href]="'mailto:' + message.email">{{ message.email }}</a>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="subject-text">
+                                {{ message.sujet || 'Sans sujet' }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <p class="message-preview">{{ message.message }}</p>
+                        </td>
+
+                        <td>
+                            <span class="date-text">{{ formaterDate(message.dateEnvoi) }}</span>
+                        </td>
+
+                        <td>
+                            <div class="action-buttons">
+                                <button type="button" class="action-button view-button" title="Lire le message"
+                                    aria-label="Lire le message" (click)="ouvrirMessage(message)">
+                                    <span>↗</span>
+                                </button>
+
+                                <button type="button" class="action-button delete-button" title="Supprimer le message"
+                                    aria-label="Supprimer le message" [disabled]="suppressionEnCours === message.id"
+                                    (click)="supprimerMessage(message)">
+                                    <span>{{ suppressionEnCours === message.id ? '…' : '×' }}</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer class="inbox-footer" *ngIf="!chargement && messagesFiltres.length > 0">
+            <span>
+                {{ messagesFiltres.length }}
+                message{{ messagesFiltres.length > 1 ? 's' : '' }} affiché{{ messagesFiltres.length > 1 ? 's' : '' }}
+            </span>
+            <span class="footer-status">
+                <span class="status-dot"></span>
+                Données du portfolio
+            </span>
+        </footer>
+    </section>
+</section>
+
+<div *ngIf="modalOuvert && messageSelectionne" class="modal-backdrop" (click)="fermerMessage()"
+    (keydown.escape)="fermerMessage()">
+    <section class="message-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+        (click)="$event.stopPropagation()">
+        <header class="modal-header">
+            <div>
+                <span class="modal-eyebrow">DÉTAIL DU MESSAGE</span>
+                <h2 id="modal-title">Message reçu</h2>
+            </div>
+
+            <button type="button" class="modal-close" aria-label="Fermer" (click)="fermerMessage()">×</button>
+        </header>
+
+        <div class="modal-sender">
+            <div class="avatar modal-avatar">
+                {{ initiales(messageSelectionne.nom) }}
+            </div>
+            <div class="modal-sender-info">
+                <strong>{{ messageSelectionne.nom }}</strong>
+                <a [href]="'mailto:' + messageSelectionne.email">
+                    {{ messageSelectionne.email }}
+                </a>
+            </div>
+        </div>
+
+        <div class="modal-meta">
+            <div>
+                <span class="meta-label">SUJET</span>
+                <strong>{{ messageSelectionne.sujet || 'Sans sujet' }}</strong>
+            </div>
+            <div>
+                <span class="meta-label">DATE DE RÉCEPTION</span>
+                <strong>{{ formaterDate(messageSelectionne.dateEnvoi) }}</strong>
+            </div>
+        </div>
+
+        <div class="message-content">
+            <span class="meta-label">CONTENU DU MESSAGE</span>
+            <p>{{ messageSelectionne.message }}</p>
+        </div>
+
+        <footer class="modal-footer">
+            <button type="button" class="modal-secondary" (click)="fermerMessage()">
+                Fermer
+            </button>
+
+
+            <a class="reply-button" [href]="'mailto:' + messageSelectionne.email">
+                Répondre par email <span>↗</span>
+            </a>
+
+        </footer>
+    </section>
+</div>
